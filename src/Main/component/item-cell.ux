@@ -1,0 +1,101 @@
+<template>
+  <div class="todo"  onclick="sendItem(idx)">
+    <div class="line1">
+      <div class="btn-check {{item.completed ? 'btn-checked' : ''}}" onclick="modifyItemStatus(idx)"></div>
+      <text class="text {{item.completed ? 'line-through' : ''}}">{{item.event}}</text>
+      <input type="button" class="btn" onclick="showHint('长按以删除')" onlongpress="deleteItem(idx)"></input>
+    </div>
+    <div class="line2">
+      <text class="{{item.completed ? 'line-through' : ''}}">{{'起始: ' + item.start.date + ' ' + item.start.time}}</text>
+      <text class="{{item.completed ? 'line-through' : ''}}">{{'结束: ' +item.end.date + ' ' + item.end.time}}</text>
+    </div>
+  </div>
+</template>
+
+<style lang="less">
+  /* 两种形式check */
+  .btn-check {
+    flex-shrink: 0;
+    width: 50px;
+    height: 50px;
+    margin: 25px;
+    border-radius: 25px;
+    border-width: 2px;
+    border-color: #80609e;
+  }    
+
+  .btn-checked {
+    flex-shrink: 0;
+    border-width: 0px;
+    background-image: url('/Common/checked.png');
+  }
+
+  .line-through {
+    text-decoration: line-through;
+    color: #cdcdcd
+  }
+
+  .todo {
+    flex-direction: column;
+    flex-grow: 1;
+    border-bottom-width: 1px;
+    border-bottom-color: #ededed;
+
+    background-color: #ffffff;
+    border-radius: 20px;
+    margin: 10px 0 10px 0;
+
+    .line1 {
+      align-items: center;
+      height: 100px;
+      
+
+      .text {
+        flex-grow: 1;
+        font-size: 40px;
+      }
+
+      
+
+      .btn {
+        width: 60px;
+        height: 60px;
+        border-radius: 30px;
+        background-image: url("/Common/close.png");
+      }
+    }
+  .line2 {
+    justify-content: space-around;
+  }
+  }
+</style>
+
+
+<script>
+import prompt from '@system.prompt'
+
+export default {
+  props: ['item', 'idx'],
+  /* 显示提示 */
+  showHint(msg) {
+    prompt.showToast({ message: msg })
+  },
+
+  /* 修改状态 */
+  modifyItemStatus(idx) {
+    this.$dispatch('modifyStatus', {idx: idx, checked: !this.item.completed})
+  },
+
+  /* 删除事项 */
+  deleteItem(idx) {
+    this.showHint(`${this.item.event} 已删除`)
+    this.$dispatch('deleteEvent', { idx: idx })
+  },
+
+  /* 发送该行idx */
+  sendItem(idx) {
+    this.$dispatch('modifyEvent', { idx: idx })
+  },
+  
+}
+</script>

@@ -1,0 +1,313 @@
+<template>
+    <!-- 添加栏 -->
+    <div class="page-add {{show ? 'up' : 'down'}}">
+      <div class="cancel-button">
+        <text onclick="hideDialog">取消</text>
+      </div>
+      <div class="new-item {{isInputting ? 'input-focus' : ''}}">
+        <input class="input-text" type="text" placeholder="输入待办事项" value="{{tmpItem.event}}" onchange="updateValue" onfocus="updateStatus" onblur="updateStatus" />
+        <input class="voice-add-btn" type="button" ontouchstart="voiceInputStart" ontouchend="voiceInputStop"></input>
+        <input class="text-add-btn" type="button" value="{{type === 0 ? '添加' : '修改'}}" onclick="type === 0 ? addItem() : changeItem()" />
+      </div>
+      <div class="time-set">
+        <text>起始时间</text>
+        <div class="date-picker">
+          <picker class="picker" type="date" value="{{tmpItem.start.date}}" onchange="getStartDate"></picker>
+          <picker class="picker" type="time" value="{{tmpItem.start.time}}" onchange="getStartTime"></picker>
+        </div>
+      </div>
+      <div class="time-set">
+        <text>完成时间</text>
+        <div class="date-picker">
+          <picker class="picker" type="date" value="{{tmpItem.end.date}}" onchange="getEndDate"></picker>
+          <picker class="picker" type="time" value="{{tmpItem.end.time}}" onchange="getEndTime"></picker>
+        </div>
+      </div>
+    </div>
+</template>
+
+<style lang="less">
+    /* 添加栏 */
+  .page-add {
+
+    display: flex;
+    flex-direction: column;
+    border: 2px solid #000000;
+    border-radius: 5px;
+    
+
+    .cancel-button {
+      flex-direction: row-reverse;
+      > text {
+        padding: 10px 30px 10px 0;
+        color:#a52a2a;
+      }
+    }
+
+    .new-item {
+      height: 100px;
+      border: 2px solid #ededed;
+      background-color: #ffffff;
+      align-items: center;
+
+      .input-text {
+        flex-grow: 1;
+        padding: 0 30px;
+      }
+
+      .voice-add-btn {
+        flex-shrink: 0;
+        width: 70px;
+        font-weight: normal; 
+        background-color: transparent;
+        background-image: url('/Common/microphone.png');
+      }
+
+      .text-add-btn {
+        flex-shrink: 0;
+        width: 70px;
+        font-weight: normal; 
+        color: #FFFFFF;
+        background-color: #ead7d7;
+      }
+    }
+
+    .input-focus {
+      border-color: #ead7d7
+    }
+
+    .time-set {
+      justify-content: space-around;
+      flex-direction: column;
+
+      > text {
+        color: #a52a2a;
+        width: 130px;
+        background-color: rgb(192, 234, 241);
+      }
+
+      .date-picker {
+        justify-content: space-around;
+        .picker {
+          background-color: #7fffd4;
+        }
+      }
+    }
+  }
+
+  .up {
+    animation-name: showDialog;
+    animation-duration: 0.5s;
+    animation-fill-mode: forwards;
+    animation-timing-function: ease-in-out;
+  }
+
+  .down {
+    animation-name: hideDialog;
+    animation-duration: 0.5s;
+    animation-fill-mode: forwards;
+    animation-timing-function: ease-in-out;
+  }
+
+   @keyframes showDialog {
+    from {
+      transform: translateY(350px);
+    } to {
+      transform: translateY(0px);
+    }
+  }
+
+  @keyframes hideDialog {
+    from {
+      transform: translateY(0px);
+    } to {
+      transform: translateY(350px);
+    }
+  }
+
+</style>
+
+<script>
+import prompt from '@system.prompt'
+// import asr from '@service.asr'
+
+export default {
+  data: {
+    // 数据
+    tmpItem: {
+      event: '',
+      completed: false,
+      start: {
+        date: '',
+        time: ''
+      },
+      end: {
+        date: '',
+        time: ''
+      }
+    },
+
+    // 是否显示当前页面
+    show: false,
+    // 正在输入
+    isInputting: false,
+    // 新增为0，修改为1
+    type: 0
+  },
+  onInit() {
+    this.$on('showDialog', this.showboardevt)
+    this.$on('modifyItem', this.modifyboardevt)
+  },
+
+  showboardevt(evt) {
+    this.type = 0
+    this.show = true
+    this.showDialog()
+  },
+  
+  modifyboardevt(evt) {
+    this.type = 1
+    this.show = true
+    this.tmpItem = evt.detail.item
+    this.showDialog()
+  },
+
+  showHint(msg) {
+    prompt.showToast({ message: msg })
+  },
+  updateValue(evt) {
+    this.tmpItem.event = evt.value
+  },
+
+  updateStatus() {
+    this.isInputting = !this.isInputting
+  },
+  // 更改时间
+  getStartTime (e) {
+    this.tmpItem.start.time = e.hour + ':' + e.minute
+  },
+  getStartDate (e) {
+    this.tmpItem.start.date = (e.month + 1) + '月' + e.day + '日'
+  },
+  getEndTime (e) {
+    this.tmpItem.end.time = e.hour + ':' + e.minute
+  },
+  getEndDate (e) {
+    this.tmpItem.end.date = (e.month + 1) + '月' + e.day + '日'
+  },
+  // 增加事项
+  addItem() {
+    if (this.tmpItem.event === '') {
+      this.showHint('请输入文字后添加!')
+    } else {
+      this.$dispatch('addItem', {item: this.tmpItem})
+      this.tmpItem.event = ''
+      this.hideDialog()
+    }
+  },
+
+  changeItem() {
+    if (this.tmpItem.event === '') {
+      this.showHint('请输入文字后确认!')
+    } else {
+      this.tmpItem = Object.create(this.tmpItem)
+      this.tmpItem.event = ''
+      this.hideDialog()
+    }
+  },
+
+  // 显示对话框
+  showDialog() {
+    // 给定初始日期 或者 用现成的
+    if (this.type === 0) {
+      this.setTime()
+    }
+
+    // 初始化语音模块
+    let that = this
+    asr.init({
+      // 初始化成功后的回调函数
+      success: function() {
+        that.showHint('语音模块初始化成功')
+      },
+      // 初始化失败后的回调函数
+      fail: function(data, code) {
+        that.showHint(`语音模块初始化失败, code=${code}, data=${data}`)
+      }
+    })
+    // 注册“部分识别”的响应函数，会在一次语音识别期间（asr.start 到 asr.stop 期间）被多次调用
+    asr.onpartialresult = ({ result }) => {
+      that.tmpItem.event = `${result}`
+    }
+    // 注册“语音识别停止”的响应函数，在一次语音识别完成后（asr.stop 时）被调用
+    asr.oncompleteresult = ({ result }) => {
+      that.tmpItem.event = `${result.match(/\[(.*)\]/)[1]}`
+    }
+    // 注册语音识别期间出现错误的响应函数，在出错后被调用
+    asr.onerror = (error) => {
+      that.showHint(`onerror: ${error}`)
+    }
+
+    
+  },
+  hideDialog() {
+    this.$dispatch('hideDialog', { show: false })
+    this.show = false
+    // 关闭语音模块
+    let that = this
+    asr.close({
+      success: function() {
+        that.showHint('语音模块已关闭')
+      },
+      fail: function(data, code) {
+        that.showHint(`close fail, code=${code}, data=${data}`)
+      }
+    })
+  },
+
+  voiceInputStart() {
+    let that = this
+    // 开始一次语音识别
+    that.tmpItem.event = ''
+    asr.start({
+      success: function() {
+        that.showHint('开始识别')
+      },
+      fail: function(data, code) {
+        that.showHint(`start fail, code=${code}, data=${data}`)
+      }
+    })
+  },
+  voiceInputStop() {
+    let that = this
+    // 停止当前语音识别
+    asr.stop({
+      success: function() {
+        that.showHint('停止识别')
+      },
+      fail: function(data, code) {
+        that.showHint(`start fail, code=${code}, data=${data}`)
+      }
+    })
+  },
+
+  setTime() {
+    var date = new Date()
+    var M = date.getMonth() + 1
+    var D = date.getDate()
+    var H = date.getHours()
+    var m = date.getMinutes()
+    this.tmpItem.start.date = M + '月' + D + '日'
+    this.tmpItem.start.time = H + ':' + m
+    date.setHours(date.getHours() + 1)
+    
+    M = date.getMonth() + 1
+    D = date.getDate()
+    H = date.getHours()
+    m = date.getMinutes()
+    this.tmpItem.end.date = M + '月' + D + '日'
+    this.tmpItem.end.time = H + ':' + m
+  }
+
+}
+</script>
