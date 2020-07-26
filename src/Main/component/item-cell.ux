@@ -3,7 +3,8 @@
     <div class="line1">
       <div class="btn-check {{item.completed ? 'btn-checked' : ''}}" onclick="modifyItemStatus(idx)"></div>
       <text class="text {{item.completed ? 'line-through' : ''}}">{{item.event}}</text>
-      <input type="button" class="btn" onclick="showHint('长按以删除')" onlongpress="deleteItem(idx)"></input>
+      <image class="btn" src="/Common/close.png" onclick="showHint('长按以删除')" onlongpress="deleteItem(idx)"></image>
+      <!-- <input type="button" class="btn" onclick="showHint('长按以删除')" onlongpress="deleteItem(idx)"></input> -->
     </div>
     <div class="line2">
       <text class="{{item.completed ? 'line-through' : ''}}">{{'起始: ' + item.start.date + ' ' + item.start.time}}</text>
@@ -60,8 +61,12 @@
       .btn {
         width: 60px;
         height: 60px;
-        border-radius: 30px;
-        background-image: url("/Common/close.png");
+        /* border-radius: 30px; */
+        margin-right: 10px;
+      }
+
+      .btn:active {
+        opacity: 0.5;
       }
     }
   .line2 {

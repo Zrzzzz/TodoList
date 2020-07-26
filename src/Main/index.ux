@@ -5,20 +5,62 @@
 <template>
   <div class="page">
 
-    <div class="page-header">
-      <text>XiTodos</text>
-    </div>
-
     <!-- 事项List -->
-    <list class="page-main">
-      <!-- <text>hahahah</text> -->
-      <block for="{{listData}}">
-        <list-item class="{{indexAdd === $idx ? 'show-item' : ''}}" type="item">
-          <page-main-item item="{{$item}}" idx="{{$idx}}"></page-main-item>
+    <!-- TODO: 分类列表 -->
+    <div class="page-main">
+      <list class="item-list">
+
+        <list-item type="header" class="page-header">
+            <text>XiTodos</text>
         </list-item>
-      </block>
-      <!-- <text>hahaha</text> -->
-    </list>
+
+        <list-item type="text" if="{{beforeShow}}">
+          <text class="sectionHeader">已过期</text>
+        </list-item>
+        <block for="{{listData}}" if="{{beforeShow}}">
+          <list-item class="{{indexAdd === $idx ? 'show-item' : ''}}" if="{{(calcDate($item.end.date) === -1) && !$item.completed}}" type="item">
+            <page-main-item item="{{$item}}" idx="{{$idx}}"></page-main-item>
+          </list-item>
+        </block>
+
+        <list-item type="text" if="{{todayShow}}">
+          <text class="sectionHeader">今日</text>
+        </list-item>
+        <block for="{{listData}}" if="{{todayShow}}">
+          <list-item class="{{indexAdd === $idx ? 'show-item' : ''}}" if="{{(calcDate($item.end.date) === 0) && !$item.completed}}" type="item">
+            <page-main-item item="{{$item}}" idx="{{$idx}}"></page-main-item>
+          </list-item>
+        </block>
+
+        <list-item type="text" if="{{tmwShow}}">
+          <text class="sectionHeader">明日</text>
+        </list-item>
+        <block for="{{listData}}" if="{{tmwShow}}">
+          <list-item class="{{indexAdd === $idx ? 'show-item' : ''}}" if="{{(calcDate($item.end.date) === 1) && !$item.completed}}" type="item">
+            <page-main-item item="{{$item}}" idx="{{$idx}}"></page-main-item>
+          </list-item>
+        </block>
+
+        <list-item type="text" if="{{afterShow}}">
+          <text class="sectionHeader">以后</text>
+        </list-item>
+        <block for="{{listData}}" if="{{afterShow}}">
+          <list-item class="{{indexAdd === $idx ? 'show-item' : ''}}" if="{{(calcDate($item.end.date) === 2) && !$item.completed}}" type="item">
+            <page-main-item item="{{$item}}" idx="{{$idx}}"></page-main-item>
+          </list-item>
+        </block>
+
+        <list-item type="text" if="{{doneShow}}">
+          <text class="sectionHeader">已完成</text>
+        </list-item>
+        <block for="{{listData}}" if="{{doneShow}}">
+          <list-item class="{{indexAdd === $idx ? 'show-item' : ''}}" if="{{$item.completed}}" type="item">
+            <page-main-item item="{{$item}}" idx="{{$idx}}"></page-main-item>
+          </list-item>
+        </block>
+      </list>
+
+    </div>
 
     <div class="new-btn" onclick="showDialog" show="{{!isShowingDialog}}">
       <image src="/Common/plus.png"></image>
@@ -27,41 +69,60 @@
     <!-- 添加栏 -->
     <page-add></page-add>
 
+    
 
   </div>
 </template>
 
 <style lang="less">
-
-  /* 页面采用竖向主轴 */
-  .page {
-    flex-direction: column;
-    background-color: #f2f2f2
-  }
-  .page-header {
-    flex-direction: column;
-    > text {
-      line-height: 200px;
-      font-size: 100px;
-      color: #ead7d7;
-      text-align: center;
-    }
-  }
+/* 页面采用竖向主轴 */
+.page {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  background-color: #f2f2f2;
 
   .page-main {
-    flex-direction: column;
-    flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  
+    .page-header {
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+
+      > text {
+        line-height: 200px;
+        font-size: 100px;
+        color: #ead7d7;
+        text-align: center;
+      }
+    }
+
+    .item-list {
+      flex: 1;
+      margin: 0 50px 0 50px;
+
+      .sectionHeader {
+        color: #000000;
+        font-size: 40px;
+        line-height: 100px;
+        font-weight: bold;
+      }
+    }
+
     .show-item {
       animation-name: showItem;
       animation-duration: 0.5s;
     }
   }
-
+  
   /* 添加按钮 */
   .new-btn {
     position: fixed;
-    left: 600px;
-    top: 1200px;
+    right: 50px;
+    bottom: 120px;
 
     > image {
       width: 100px;
@@ -69,14 +130,19 @@
     }
   }
 
-  @keyframes showItem {
-    from {
-      opacity: 0;
-    } to {
-      opacity: 1;
-    }
+}
+
+
+
+
+@keyframes showItem {
+  from {
+    opacity: 0;
   }
-  
+  to {
+    opacity: 1;
+  }
+}
 </style>
 
 
@@ -122,6 +188,54 @@ export default {
           date: '3月23日',
           time: '12:30'
         }
+      },
+      {
+        event: 'cdawdawd',
+        completed: true,
+        start: {
+          date: '3月23日',
+          time: '12:30'
+        },
+        end: {
+          date: '3月23日',
+          time: '12:30'
+        }
+      },
+      {
+        event: 'aaaaaaaaa',
+        completed: true,
+        start: {
+          date: '3月23日',
+          time: '12:30'
+        },
+        end: {
+          date: '3月23日',
+          time: '12:30'
+        }
+      },
+      {
+        event: 'bbbbbbbbb',
+        completed: true,
+        start: {
+          date: '3月23日',
+          time: '12:30'
+        },
+        end: {
+          date: '3月23日',
+          time: '12:30'
+        }
+      },
+      {
+        event: 'ccccccc',
+        completed: true,
+        start: {
+          date: '3月23日',
+          time: '12:30'
+        },
+        end: {
+          date: '3月23日',
+          time: '12:30'
+        }
       }
     ],
     // 动态样式
@@ -130,10 +244,69 @@ export default {
     indexAdd: 0,
 
     // 是否在新建
-    isShowingDialog: false
+    isShowingDialog: false,
   },
   computed: {
-    // nothing
+    beforeShow: {
+      get() {
+        var pend = false
+        for (var i in this.listData) {
+          if (this.calcDate(this.listData[i].end.date) === -1 && !this.listData[i].completed) {
+            pend = true
+            break
+          }
+        }
+        return pend
+      }
+    },
+    todayShow: {
+      get() {
+        var pend = false
+        for (var i in this.listData) {
+          if (this.calcDate(this.listData[i].end.date) === 0 && !this.listData[i].completed) {
+            pend = true
+            break
+          }
+        }
+        return pend
+      }
+    },
+    tmwShow: {
+      get() {
+        var pend = false
+        for (var i in this.listData) {
+          if (this.calcDate(this.listData[i].end.date) === 1 && !this.listData[i].completed) {
+            pend = true
+            break
+          }
+        }
+        return pend
+      }
+    },
+    afterShow: {
+      get() {
+        var pend = false
+        for (var i in this.listData) {
+          if (this.calcDate(this.listData[i].end.date) === 2 && !this.listData[i].completed) {
+            pend = true
+            break
+          }
+        }
+        return pend
+      }
+    },
+    doneShow: {
+      get() {
+        var pend = false
+        for (var i in this.listData) {
+          if (this.listData[i].completed === true) {
+            pend = true
+            break
+          }
+        }
+        return pend
+      }
+    }
   },
   // 开始监听
   onInit() {
@@ -143,7 +316,7 @@ export default {
       let idx = params.idx
       this.listData[idx].completed = params.checked
       // 做完的排在下面
-      this.sortList()
+      // this.sortList()
     })
     // 删除
     this.$on('deleteEvent', (evt) => {
@@ -172,7 +345,7 @@ export default {
     })
 
   },
-  
+
   // 显示提示
   showHint(msg) {
     prompt.showToast({ message: msg })
@@ -196,19 +369,19 @@ export default {
   calcDate(aDate) {
     var date = new Date()
     const tD = date.getDate()
-    const tM = date.getMonth()
+    const tM = date.getMonth() + 1
     date.setDate(date.getDate() + 1) // 往后一天
-    const twmM = date.getMonth()
-    const twmD = date.getDate()
+    const tmwM = date.getMonth() + 1
+    const tmwD = date.getDate()
     try {
-      const aD = Number(aDate.match(/(.+?)\D/)[1])
-      const aM = Number(aDate.match(/\D(.+?)\D/)[1])
+      const aM = Number(aDate.match(/(.+?)\D/)[1])
+      const aD = Number(aDate.match(/\D(.+?)\D/)[1])
 
       if (aM < tM || aM === tM && aD < tD) {
         return -1
       } else if (aM === tM && aD === tD) {
         return 0
-      } else if (aM === twmM && aD === twmD) {
+      } else if (aM === tmwM && aD === tmwD) {
         return 1
       } else {
         return 2
@@ -221,7 +394,7 @@ export default {
 
   // 整理列表
   sortList() {
-    this.listData.sort(function(a, b) {
+    this.listData.sort(function (a, b) {
       if (a.completed === false && b.completed === true) {
         return -1
       } else {
