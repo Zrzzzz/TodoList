@@ -75,12 +75,10 @@
       font-weight: normal;
       background-color: transparent;
       margin: 10px;
-      /* background-image: url('/Common/microphone.png'); */
     }
 
     .voice-add-btn:active {
       opacity: 0.5;
-      /* background-color: #000000; */
     }
 
     .text-add-btn {
@@ -188,7 +186,7 @@
 
 <script>
 import prompt from '@system.prompt'
-import asr from '@service.asr'
+// import asr from '@service.asr'
 
 export default {
   data: {
@@ -246,13 +244,13 @@ export default {
     this.tmpItem.start.time = e.hour + ':' + e.minute
   },
   getStartDate(e) {
-    this.tmpItem.start.date = (e.month + 1) + '月' + e.day + '日'
+    this.tmpItem.start.date = e.year + '年' + (e.month + 1) + '月' + e.day + '日'
   },
   getEndTime(e) {
     this.tmpItem.end.time = e.hour + ':' + e.minute
   },
   getEndDate(e) {
-    this.tmpItem.end.date = (e.month + 1) + '月' + e.day + '日'
+    this.tmpItem.end.date = e.year + '年' + (e.month + 1) + '月' + e.day + '日'
   },
   // 增加事项
   addItem() {
@@ -317,9 +315,20 @@ export default {
   hideDialog() {
     this.$dispatch('hideDialog', { show: false })
     // tmpItem抛开引用
-    this.tmpItem = Object.create(this.tmpItem)
-    this.tmpItem.event = ''
-    this.tmpItem.completed = false
+    this.tmpItem = {
+      event: '',
+      completed: false,
+      start: {
+        date: '',
+        time: ''
+      },
+      end: {
+        date: '',
+        time: ''
+      }
+    }
+
+
     this.isShowing = false
     // 关闭语音模块
     let that = this
@@ -361,19 +370,21 @@ export default {
 
   setTime() {
     var date = new Date()
+    var Y = date.getFullYear()
     var M = date.getMonth() + 1
     var D = date.getDate()
     var H = date.getHours()
     var m = date.getMinutes()
-    this.tmpItem.start.date = M + '月' + D + '日'
+    this.tmpItem.start.date = Y + '年' + M + '月' + D + '日'
     this.tmpItem.start.time = H + ':' + m
     date.setHours(date.getHours() + 1)
 
+    var Y = date.getFullYear()
     M = date.getMonth() + 1
     D = date.getDate()
     H = date.getHours()
     m = date.getMinutes()
-    this.tmpItem.end.date = M + '月' + D + '日'
+    this.tmpItem.end.date = Y + '年' + M + '月' + D + '日'
     this.tmpItem.end.time = H + ':' + m
   }
 

@@ -1,78 +1,81 @@
 <template>
-  <div class="todo"  onclick="sendItem(idx)">
+  <div class="todo" onclick="sendItem(idx)">
     <div class="line1">
       <div class="btn-check {{item.completed ? 'btn-checked' : ''}}" onclick="modifyItemStatus(idx)"></div>
       <text class="text {{item.completed ? 'line-through' : ''}}">{{item.event}}</text>
       <image class="btn" src="/Common/close.png" onclick="showHint('长按以删除')" onlongpress="deleteItem(idx)"></image>
       <!-- <input type="button" class="btn" onclick="showHint('长按以删除')" onlongpress="deleteItem(idx)"></input> -->
     </div>
-    <div class="line2">
-      <text class="{{item.completed ? 'line-through' : ''}}">{{'起始: ' + item.start.date + ' ' + item.start.time}}</text>
-      <text class="{{item.completed ? 'line-through' : ''}}">{{'结束: ' +item.end.date + ' ' + item.end.time}}</text>
-    </div>
+    <!-- <div class="line2"> -->
+    <!-- <text class="{{item.completed ? 'line-through' : ''}}">{{'起始: ' + item.start.date + ' ' + item.start.time}}</text> -->
+    <!-- <text class="{{item.completed ? 'line-through' : ''}}">{{'结束: ' +item.end.date + ' ' + item.end.time}}</text> -->
+    <progress type="horizontal" class="progress" style="color: {{dyColor}}; stroke-width: 10px;" percent="{{dyPercent}}"></progress>
+    <!-- </div> -->
+
   </div>
 </template>
 
 <style lang="less">
-  /* 两种形式check */
-  .btn-check {
-    flex-shrink: 0;
-    width: 50px;
-    height: 50px;
-    margin: 25px;
-    border-radius: 25px;
-    border-width: 2px;
-    border-color: #80609e;
-  }    
+/* 两种形式check */
+.btn-check {
+  flex-shrink: 0;
+  width: 50px;
+  height: 50px;
+  margin: 25px;
+  border-radius: 25px;
+  border-width: 2px;
+  border-color: #80609e;
+}
 
-  .btn-checked {
-    flex-shrink: 0;
-    border-width: 0px;
-    background-image: url('/Common/checked.png');
-  }
+.btn-checked {
+  flex-shrink: 0;
+  border-width: 0px;
+  background-image: url("/Common/checked.png");
+}
 
-  .line-through {
-    text-decoration: line-through;
-    color: #cdcdcd
-  }
+.line-through {
+  text-decoration: line-through;
+  color: #cdcdcd;
+}
 
-  .todo {
-    flex-direction: column;
-    flex-grow: 1;
-    border-bottom-width: 1px;
-    border-bottom-color: #ededed;
+.todo {
+  flex-direction: column;
+  flex-grow: 1;
 
-    background-color: #ffffff;
-    border-radius: 20px;
-    margin: 10px 0 10px 0;
+  background-color: #ffffff;
+  border-radius: 20px;
+  margin: 10px 0;
 
-    .line1 {
-      align-items: center;
-      height: 100px;
-      
+  .line1 {
+    align-items: center;
+    height: 100px;
 
-      .text {
-        flex-grow: 1;
-        font-size: 40px;
-      }
-
-      
-
-      .btn {
-        width: 60px;
-        height: 60px;
-        /* border-radius: 30px; */
-        margin-right: 10px;
-      }
-
-      .btn:active {
-        opacity: 0.5;
-      }
+    .text {
+      flex-grow: 1;
+      font-size: 40px;
     }
-  .line2 {
-    justify-content: space-around;
+
+    .btn {
+      width: 60px;
+      height: 60px;
+      /* border-radius: 30px; */
+      margin-right: 10px;
+    }
+
+    .btn:active {
+      opacity: 0.5;
+    }
   }
+  /* .line2 { */
+  /* justify-content: center; */
+  .progress {
+    width: 1000px;
+    /* align-self: stretch;
+      flex-basis: 1000px; */
+    margin: 10px 50px;
   }
+  /* } */
+}
 </style>
 
 
@@ -81,6 +84,25 @@ import prompt from '@system.prompt'
 
 export default {
   props: ['item', 'idx'],
+  computed: {
+    dyColor: {
+      get() {
+        const obj = this.calcStatus(this.item)
+        if (obj.status === 1 || obj.status === 0) {
+          return '#FFCC99'
+        } else if (obj.status === -1) {
+          return '#4dc2af'
+        } else {
+          return '#CC0033'
+        }
+      }
+    },
+    dyPercent: {
+      get() {
+        return this.calcStatus(this.item).percent
+      }
+    }
+  },
   /* 显示提示 */
   showHint(msg) {
     prompt.showToast({ message: msg })
@@ -88,7 +110,7 @@ export default {
 
   /* 修改状态 */
   modifyItemStatus(idx) {
-    this.$dispatch('modifyStatus', {idx: idx, checked: !this.item.completed})
+    this.$dispatch('modifyStatus', { idx: idx, checked: !this.item.completed })
   },
 
   /* 删除事项 */
@@ -101,6 +123,38 @@ export default {
   sendItem(idx) {
     this.$dispatch('modifyEvent', { idx: idx })
   },
-  
+
+  // 计算天数
+  calcStatus(item) {
+    var time = new Date().getTime()
+    var startTime = item.start.date.replace(/[\u4e00-\u9fa5]/g, '.') + ' ' + item.start.time
+    startTime = new Date(startTime).getTime()
+    var endTime = item.end.date.replace(/[\u4e00-\u9fa5]/g, '.') + ' ' + item.end.time
+    endTime = new Date(endTime).getTime()
+    
+    if (item.completed) {
+      return {
+        status: 2,
+        percent: 100
+      }
+    } else if (time < startTime) {
+      return {
+        status: 1,
+        percent: 0
+      }
+    } else if (time > endTime) {
+      return {
+        status: -1,
+        percent: 100
+      }
+    } else {
+      return {
+        status: 0,
+        percent: ((time - startTime) / (endTime - startTime)) * 100
+      }
+    }
+    
+  },
+
 }
 </script>

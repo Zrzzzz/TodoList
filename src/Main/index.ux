@@ -157,11 +157,11 @@ export default {
         event: 'eat apple',
         completed: false,
         start: {
-          date: '3月23日',
+          date: '2020年3月23日',
           time: '12:30'
         },
         end: {
-          date: '3月23日',
+          date: '2020年9月23日',
           time: '12:30'
         }
       },
@@ -169,11 +169,11 @@ export default {
         event: 'buy banana',
         completed: false,
         start: {
-          date: '3月23日',
+          date: '2020年3月23日',
           time: '12:30'
         },
         end: {
-          date: '3月23日',
+          date: '2020年3月23日',
           time: '12:30'
         }
       },
@@ -181,11 +181,11 @@ export default {
         event: 'cut pear',
         completed: true,
         start: {
-          date: '3月23日',
+          date: '2020年3月23日',
           time: '12:30'
         },
         end: {
-          date: '3月23日',
+          date: '2020年3月23日',
           time: '12:30'
         }
       },
@@ -193,50 +193,14 @@ export default {
         event: 'cdawdawd',
         completed: true,
         start: {
-          date: '3月23日',
+          date: '2020年3月23日',
           time: '12:30'
         },
         end: {
-          date: '3月23日',
+          date: '2020年3月23日',
           time: '12:30'
         }
       },
-      {
-        event: 'aaaaaaaaa',
-        completed: true,
-        start: {
-          date: '3月23日',
-          time: '12:30'
-        },
-        end: {
-          date: '3月23日',
-          time: '12:30'
-        }
-      },
-      {
-        event: 'bbbbbbbbb',
-        completed: true,
-        start: {
-          date: '3月23日',
-          time: '12:30'
-        },
-        end: {
-          date: '3月23日',
-          time: '12:30'
-        }
-      },
-      {
-        event: 'ccccccc',
-        completed: true,
-        start: {
-          date: '3月23日',
-          time: '12:30'
-        },
-        end: {
-          date: '3月23日',
-          time: '12:30'
-        }
-      }
     ],
     // 动态样式
     isInputting: false,
@@ -368,28 +332,39 @@ export default {
   // 计算天数
   calcDate(aDate) {
     var date = new Date()
-    const tD = date.getDate()
-    const tM = date.getMonth() + 1
-    date.setDate(date.getDate() + 1) // 往后一天
-    const tmwM = date.getMonth() + 1
-    const tmwD = date.getDate()
-    try {
-      const aM = Number(aDate.match(/(.+?)\D/)[1])
-      const aD = Number(aDate.match(/\D(.+?)\D/)[1])
+    // 去掉小时分钟
+    date = new Date(date.getFullYear() + '/' + (Number(date.getMonth()) + 1) + '/' + date.getDate()).getTime()
+    // const tD = date.getDate()
+    // const tM = date.getMonth() + 1
+    // date.setDate(date.getDate() + 1) // 往后一天
+    // const tmwM = date.getMonth() + 1
+    // const tmwD = date.getDate()
+    // try {
+    //   const aM = Number(aDate.match(/年(.+?)月/)[1])
+    //   const aD = Number(aDate.match(/月(.+?)日/)[1])
 
-      if (aM < tM || aM === tM && aD < tD) {
-        return -1
-      } else if (aM === tM && aD === tD) {
-        return 0
-      } else if (aM === tmwM && aD === tmwD) {
-        return 1
-      } else {
-        return 2
-      }
-    } catch {
-      this.showHint('日期计算 error')
+    //   if (aM < tM || aM === tM && aD < tD) {
+    //     return -1
+    //   } else if (aM === tM && aD === tD) {
+    //     return 0
+    //   } else if (aM === tmwM && aD === tmwD) {
+    //     return 1
+    //   } else {
+    //     return 2
+    //   }
+    // } catch {
+    //   this.showHint('日期计算 error')
+    // }
+    aDate = new Date(aDate.replace(/[\u4e00-\u9fa5]/g, '.')).getTime()
+    if (aDate < date) {
+      return -1
+    } else if (aDate === date) {
+      return 0
+    } else if (aDate === date + 86400000) {
+      return 1
+    } else {
+      return 2
     }
-
   },
 
   // 整理列表
