@@ -1,28 +1,38 @@
 <template>
   <!-- 添加栏 -->
   <div class="page-add {{isShowing ? 'show-dialog' : 'hide-dialog'}}">
-    <div class="filter {{isShowing ? 'show-filter' : 'hide-filter'}}" if="{{isShowing}}" onclick="hideDialog(); cancelInputting();"></div>
+    <!-- 蒙版 -->
+    <div class="filter {{isShowing ? 'show-filter' : 'hide-filter'}}" if="{{isShowing}}" onclick="hideDialog(); cancelInputting();" style="bottom: {{bottom}}px;"></div>
+    <!-- 取消按钮 -->
     <div class="cancel-button">
       <text onclick="hideDialog(); cancelInputting();">取消</text>
     </div>
-    <div class="new-item {{isInputting ? 'input-focus' : ''}}">
+    <!-- 时间模块 -->
+    <div class="time-line" if="{{isShowingTimeline}}">
+      <div class="time-item">
+        <text>起始时间</text>
+        <div class="picker-item">
+          <picker class="picker" type="date" value="{{tmpItem.start.date}}" onchange="getStartDate"></picker>
+          <picker class="picker" type="time" value="{{tmpItem.start.time}}" onchange="getStartTime"></picker>
+        </div>
+      </div>
+      <div class="time-item">
+        <text>完成时间</text>
+        <div class="picker-item">
+          <picker class="picker" type="date" value="{{tmpItem.end.date}}" onchange="getEndDate"></picker>
+          <picker class="picker" type="time" value="{{tmpItem.end.time}}" onchange="getEndTime"></picker>
+        </div>
+      </div>
+    </div>
+    <!-- 按钮模块 -->
+    <div class="button-line">
+      <image src="/Common/microphone.png" class="image-btn" ontouchstart="voiceInputStart" ontouchend="voiceInputStop"></image>
+      <image src="/Common/clock.png" class="image-btn" onclick="showTimelineToggle"></image>
+      <input class="text-add-btn" type="button" value="{{type === 0 ? '添加' : '修改'}}" disabled="{{doneDisabled}}" onclick="type === 0 ? addEvent() : changeEvent()" />
+    </div>
+    <!-- 输入栏 -->
+    <div class="add-line {{isInputting ? 'input-focus' : ''}}">
       <input id="textfield" class="input-text" type="text" placeholder="输入待办事项" enterkeytype="done" value="{{tmpItem.event}}" onchange="updateValue" onfocus="updateStatus" onblur="updateStatus" />
-      <image src="/Common/microphone.png" class="voice-add-btn" ontouchstart="voiceInputStart" ontouchend="voiceInputStop"></image>
-      <input class="text-add-btn" type="button" value="{{type === 0 ? '添加' : '修改'}}" onclick="type === 0 ? addItem() : changeItem()" />
-    </div>
-    <div class="time-set">
-      <text>起始时间</text>
-      <div class="date-picker">
-        <picker class="picker" type="date" value="{{tmpItem.start.date}}" onchange="getStartDate"></picker>
-        <picker class="picker" type="time" value="{{tmpItem.start.time}}" onchange="getStartTime"></picker>
-      </div>
-    </div>
-    <div class="time-set">
-      <text>完成时间</text>
-      <div class="date-picker">
-        <picker class="picker" type="date" value="{{tmpItem.end.date}}" onchange="getEndDate"></picker>
-        <picker class="picker" type="time" value="{{tmpItem.end.time}}" onchange="getEndTime"></picker>
-      </div>
     </div>
   </div>
 </template>
@@ -43,7 +53,6 @@
     position: fixed;
     width: 100%;
     top: 0;
-    bottom: 324px;
     background-color: #6e6e6e;
     opacity: 0.2;
   }
@@ -56,28 +65,43 @@
     }
   }
 
-  .new-item {
-    height: 100px;
-    border: 2px solid #ededed;
-    background-color: #ffffff;
-    align-items: center;
-    border-radius: 25px;
+  .time-line {
+    justify-content: space-around;
 
-    .input-text {
-      flex-grow: 1;
-      margin: 0 30px;
-      
+    .time-item {
+      justify-content: space-around;
+      /* flex-grow: 1; */
+      border-bottom-color: #000000;
+      border-width: 2px;
+      border-radius: 50px;
+
+      padding: 10px 20px;
+      flex-direction: column;
+
+      > text {
+        color: #a52a2a;
+        width: 130px;
+      }
+
+      .picker-item {
+        justify-content: space-around;
+        .picker {
+        }
+      }
     }
+  }
 
-    .voice-add-btn {
+  .button-line {
+    flex-direction: row;
+    padding: 10px 10px;
+
+    .image-btn {
       flex-shrink: 0;
-      width: 50px;
-      font-weight: normal;
       background-color: transparent;
-      margin: 10px;
+      margin: 10px 15px;
     }
 
-    .voice-add-btn:active {
+    .image-btn:active {
       opacity: 0.5;
     }
 
@@ -88,30 +112,26 @@
       color: #ffffff;
       border-radius: 50px;
       background-color: #ead7d7;
+      margin-left: 450px;
+    }
+  }
+
+  .add-line {
+    height: 100px;
+    border: 2px solid #ededed;
+    background-color: #ffffff;
+    margin: 10px 10px;
+    align-items: center;
+    border-radius: 50px;
+
+    .input-text {
+      flex-grow: 1;
+      margin: 0 30px;
     }
   }
 
   .input-focus {
     border-color: #ead7d7;
-  }
-
-  .time-set {
-    justify-content: space-around;
-    /* flex-grow: 1; */
-    flex-direction: column;
-
-    > text {
-      color: #a52a2a;
-      width: 130px;
-      background-color: rgb(192, 234, 241);
-    }
-
-    .date-picker {
-      justify-content: space-around;
-      .picker {
-        background-color: #7fffd4;
-      }
-    }
   }
 }
 
@@ -186,7 +206,7 @@
 
 <script>
 import prompt from '@system.prompt'
-// import asr from '@service.asr'
+import asr from '@service.asr'
 
 export default {
   data: {
@@ -209,37 +229,63 @@ export default {
     // 正在输入
     isInputting: false,
     // 新增为0，修改为1
-    type: 0
+    type: 0,
+    // 正在修改的序号
+    modifyingIdx: 0,
+    // 是否显示时间模块
+    isShowingTimeline: false
   },
+
+  computed: {
+    /* 用来动态计算蒙版底部距离 */
+    bottom: {
+      get() {
+        if (this.isShowingTimeline) {
+          return 377
+        } else {
+          return 272
+        }
+      }
+    },
+
+    doneDisabled: {
+      get() {
+        if (this.tmpItem.event === '') {
+          return true
+        } else {
+          return false
+        }
+      }
+    }
+  },
+  /* 用于监听 */
   onInit() {
-    this.$on('showDialog', this.showboardevt)
-    this.$on('modifyItem', this.modifyboardevt)
-  },
-
-  showboardevt(evt) {
-    this.type = 0
-    this.isShowing = true
-    this.showDialog()
-  },
-
-  modifyboardevt(evt) {
-    this.type = 1
-    this.isShowing = true
-    this.tmpItem = evt.detail.item
-    this.showDialog()
+    this.$on('showDialog', (evt) => {
+      this.type = 0
+      this.isShowing = true
+      this.showDialog()
+    })
+    this.$on('modifyItem', (evt) => {
+      this.type = 1
+      this.isShowing = true
+      this.tmpItem = evt.detail.item
+      this.modifyingIdx = evt.detail.idx
+      this.showDialog()
+    })
   },
 
   showHint(msg) {
     prompt.showToast({ message: msg })
   },
+  /* 更新数据 */
   updateValue(evt) {
     this.tmpItem.event = evt.value
   },
-
+  /* 改变输入状态 */
   updateStatus() {
     this.isInputting = !this.isInputting
   },
-  // 更改时间
+  // date picker函数
   getStartTime(e) {
     this.tmpItem.start.time = e.hour + ':' + e.minute
   },
@@ -252,33 +298,26 @@ export default {
   getEndDate(e) {
     this.tmpItem.end.date = e.year + '年' + (e.month + 1) + '月' + e.day + '日'
   },
-  // 增加事项
-  addItem() {
-    if (this.tmpItem.event === '') {
-      this.showHint('请输入文字后添加!')
-    } else {
-      this.cancelInputting()
-      this.$dispatch('addItem', { item: this.tmpItem })
-      this.hideDialog()
-    }
+  /* 增加事项 */
+  addEvent() {
+    this.$dispatch('addEvent', { item: this.tmpItem })
+    this.cancelInputting()
+    this.hideDialog()
   },
-
-  changeItem() {
-    if (this.tmpItem.event === '') {
-      this.showHint('请输入文字后确认!')
-    } else {
-      this.cancelInputting()
-      this.hideDialog()
-    }
+  /* 改变事项 */
+  changeEvent() {
+    this.$dispatch('modifiedEvent', { item: this.tmpItem, idx: this.modifyingIdx })
+    this.cancelInputting()
+    this.hideDialog()
   },
-
+  /* 取消输入 */
   cancelInputting() {
     this.$element('textfield').focus({
       focus: false
     })
   },
 
-  // 显示对话框
+  /* 显示添加栏 */
   showDialog() {
     // 给定初始日期 或者 用现成的
     if (this.type === 0) {
@@ -327,8 +366,6 @@ export default {
         time: ''
       }
     }
-
-
     this.isShowing = false
     // 关闭语音模块
     let that = this
@@ -341,7 +378,12 @@ export default {
       }
     })
   },
+  /* 用于切换时间模块是否显示 */
+  showTimelineToggle() {
+    this.isShowingTimeline = !this.isShowingTimeline
+  },
 
+  /* 语音识别开始和结束 */
   voiceInputStart() {
     let that = this
     // 开始一次语音识别
@@ -368,6 +410,7 @@ export default {
     })
   },
 
+  /* 设置picker为当前时间 */
   setTime() {
     var date = new Date()
     var Y = date.getFullYear()

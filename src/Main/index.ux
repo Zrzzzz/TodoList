@@ -6,62 +6,64 @@
   <div class="page">
 
     <!-- 事项List -->
-    <!-- TODO: 分类列表 -->
     <div class="page-main">
+      <!-- list组件 -->
       <list class="item-list">
-
+        <!-- 头部 -->
         <list-item type="header" class="page-header">
-            <text>XiTodos</text>
+          <text>XiTodos</text>
         </list-item>
-
-        <list-item type="text" if="{{beforeShow}}">
-          <text class="sectionHeader">已过期</text>
-        </list-item>
-        <block for="{{listData}}" if="{{beforeShow}}">
-          <list-item class="{{indexAdd === $idx ? 'show-item' : ''}}" if="{{(calcDate($item.end.date) === -1) && !$item.completed}}" type="item">
-            <page-main-item item="{{$item}}" idx="{{$idx}}"></page-main-item>
+        <!-- 事件列表 -->
+        <block>
+          <list-item type="text" if="{{beforeShow}}">
+            <text class="sectionHeader">已过期</text>
           </list-item>
-        </block>
+          <block for="{{listData}}" if="{{beforeShow}}">
+            <list-item class="show-item" if="{{(calcDate($item.end.date, $item.end.time) === -1) && !$item.completed}}" type="item">
+              <page-main-item item="{{$item}}" idx="{{$idx}}"></page-main-item>
+            </list-item>
+          </block>
 
-        <list-item type="text" if="{{todayShow}}">
-          <text class="sectionHeader">今日</text>
-        </list-item>
-        <block for="{{listData}}" if="{{todayShow}}">
-          <list-item class="{{indexAdd === $idx ? 'show-item' : ''}}" if="{{(calcDate($item.end.date) === 0) && !$item.completed}}" type="item">
-            <page-main-item item="{{$item}}" idx="{{$idx}}"></page-main-item>
+          <list-item type="text" if="{{todayShow}}">
+            <text class="sectionHeader">今日</text>
           </list-item>
-        </block>
+          <block for="{{listData}}" if="{{todayShow}}">
+            <list-item class="show-item" if="{{(calcDate($item.end.date, $item.end.time) === 0) && !$item.completed}}" type="item">
+              <page-main-item item="{{$item}}" idx="{{$idx}}"></page-main-item>
+            </list-item>
+          </block>
 
-        <list-item type="text" if="{{tmwShow}}">
-          <text class="sectionHeader">明日</text>
-        </list-item>
-        <block for="{{listData}}" if="{{tmwShow}}">
-          <list-item class="{{indexAdd === $idx ? 'show-item' : ''}}" if="{{(calcDate($item.end.date) === 1) && !$item.completed}}" type="item">
-            <page-main-item item="{{$item}}" idx="{{$idx}}"></page-main-item>
+          <list-item type="text" if="{{tmwShow}}">
+            <text class="sectionHeader">明日</text>
           </list-item>
-        </block>
+          <block for="{{listData}}" if="{{tmwShow}}">
+            <list-item class="show-item" if="{{(calcDate($item.end.date, $item.end.time) === 1) && !$item.completed}}" type="item">
+              <page-main-item item="{{$item}}" idx="{{$idx}}"></page-main-item>
+            </list-item>
+          </block>
 
-        <list-item type="text" if="{{afterShow}}">
-          <text class="sectionHeader">以后</text>
-        </list-item>
-        <block for="{{listData}}" if="{{afterShow}}">
-          <list-item class="{{indexAdd === $idx ? 'show-item' : ''}}" if="{{(calcDate($item.end.date) === 2) && !$item.completed}}" type="item">
-            <page-main-item item="{{$item}}" idx="{{$idx}}"></page-main-item>
+          <list-item type="text" if="{{afterShow}}">
+            <text class="sectionHeader">以后</text>
           </list-item>
-        </block>
+          <block for="{{listData}}" if="{{afterShow}}">
+            <list-item class="show-item" if="{{(calcDate($item.end.date, $item.end.time) === 2) && !$item.completed}}" type="item">
+              <page-main-item item="{{$item}}" idx="{{$idx}}"></page-main-item>
+            </list-item>
+          </block>
 
-        <list-item type="text" if="{{doneShow}}">
-          <text class="sectionHeader">已完成</text>
-        </list-item>
-        <block for="{{listData}}" if="{{doneShow}}">
-          <list-item class="{{indexAdd === $idx ? 'show-item' : ''}}" if="{{$item.completed}}" type="item">
-            <page-main-item item="{{$item}}" idx="{{$idx}}"></page-main-item>
+          <list-item type="text" if="{{doneShow}}">
+            <text class="sectionHeader">已完成</text>
           </list-item>
+          <block for="{{listData}}" if="{{doneShow}}">
+            <list-item class="show-item" if="{{$item.completed}}" type="item">
+              <page-main-item item="{{$item}}" idx="{{$idx}}"></page-main-item>
+            </list-item>
+          </block>
         </block>
       </list>
 
     </div>
-
+    <!-- 新建btn -->
     <div class="new-btn" onclick="showDialog" show="{{!isShowingDialog}}">
       <image src="/Common/plus.png"></image>
     </div>
@@ -69,26 +71,21 @@
     <!-- 添加栏 -->
     <page-add></page-add>
 
-    
-
   </div>
 </template>
 
 <style lang="less">
 /* 页面采用竖向主轴 */
 .page {
-  display: flex;
   flex-direction: column;
-  flex-shrink: 0;
   background-color: #f2f2f2;
 
   .page-main {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+
     .page-header {
-      display: flex;
       flex-direction: column;
       flex-shrink: 0;
 
@@ -102,7 +99,7 @@
 
     .item-list {
       flex: 1;
-      margin: 0 50px 0 50px;
+      margin: 0 50px;
 
       .sectionHeader {
         color: #000000;
@@ -114,10 +111,10 @@
 
     .show-item {
       animation-name: showItem;
-      animation-duration: 0.5s;
+      animation-duration: 300ms;
     }
   }
-  
+
   /* 添加按钮 */
   .new-btn {
     position: fixed;
@@ -129,11 +126,7 @@
       height: 100px;
     }
   }
-
 }
-
-
-
 
 @keyframes showItem {
   from {
@@ -148,69 +141,18 @@
 
 <script>
 import prompt from '@system.prompt'
+import storage from '@system.storage'
 
 export default {
   private: {
     // 数据列表
-    listData: [
-      {
-        event: 'eat apple',
-        completed: false,
-        start: {
-          date: '2020年3月23日',
-          time: '12:30'
-        },
-        end: {
-          date: '2020年9月23日',
-          time: '12:30'
-        }
-      },
-      {
-        event: 'buy banana',
-        completed: false,
-        start: {
-          date: '2020年3月23日',
-          time: '12:30'
-        },
-        end: {
-          date: '2020年3月23日',
-          time: '12:30'
-        }
-      },
-      {
-        event: 'cut pear',
-        completed: true,
-        start: {
-          date: '2020年3月23日',
-          time: '12:30'
-        },
-        end: {
-          date: '2020年3月23日',
-          time: '12:30'
-        }
-      },
-      {
-        event: 'cdawdawd',
-        completed: true,
-        start: {
-          date: '2020年3月23日',
-          time: '12:30'
-        },
-        end: {
-          date: '2020年3月23日',
-          time: '12:30'
-        }
-      },
-    ],
-    // 动态样式
-    isInputting: false,
-    // 最近一条InDex
-    indexAdd: 0,
+    listData: [],
 
     // 是否在新建
     isShowingDialog: false,
   },
   computed: {
+    /* 存储几种模块的显示Bool */
     beforeShow: {
       get() {
         var pend = false
@@ -272,91 +214,91 @@ export default {
       }
     }
   },
-  // 开始监听
+  /* 监听函数 和 数据读取 */
   onInit() {
-    // 改变状态
+    // 启动时读取数据
+    this.loadData()
+
+    /* 新增事件 */
+    this.$on('addEvent', (evt) => {
+      var copyObj = JSON.parse(JSON.stringify(evt.detail.item))
+      if (this.listData.length !== 0) {
+        var indexAdd = this.listData.length - 1
+        while (indexAdd--) {
+          if (!this.listData[indexAdd].completed)
+            break
+        }
+        indexAdd++
+      } else {
+        indexAdd = 0
+      }
+
+      this.listData.splice(indexAdd, 0, copyObj)
+    })
+
+    /* 改变状态 */
     this.$on('modifyStatus', (evt) => {
       const params = evt.detail
       let idx = params.idx
       this.listData[idx].completed = params.checked
-      // 做完的排在下面
-      // this.sortList()
+      this.saveData()
     })
-    // 删除
+    /* 删除事件 */
     this.$on('deleteEvent', (evt) => {
       this.listData.splice(evt.detail.idx, 1)
+      this.saveData()
     })
-    // 修改
+    /* 修改事件 */
     this.$on('modifyEvent', (evt) => {
-      this.changeItem(evt.detail.idx)
+      this.isShowingDialog = true
+      this.$broadcast('modifyItem', {
+        item: Object.create(this.listData[evt.detail.idx]),
+        idx: evt.detail.idx
+      })
     })
 
-    // 添加栏隐藏
+    /* 修改完时间  */
+    this.$on('modifiedEvent', (evt) => {
+      this.listData.splice(evt.detail.idx, 1, evt.detail.item)
+    })
+
+    /* 隐藏添加栏时 */
     this.$on('hideDialog', (evt) => {
       this.isShowingDialog = false
-    })
-
-    // 新增事项
-    this.$on('addItem', (evt) => {
-      var copyObj = JSON.parse(JSON.stringify(evt.detail.item))
-      this.indexAdd = this.listData.length - 1
-      while (this.indexAdd--) {
-        if (!this.listData[this.indexAdd].completed)
-          break
-      }
-      this.indexAdd++
-      this.listData.splice(this.indexAdd, 0, copyObj)
+      this.saveData()
     })
 
   },
 
-  // 显示提示
+  /* 提示信息 */
   showHint(msg) {
     prompt.showToast({ message: msg })
   },
 
-  // 显示对话框
+  /* 显示对话框 */
   showDialog() {
     this.isShowingDialog = true
     this.$broadcast('showDialog')
   },
 
-  // 更改事项
-  changeItem(idx) {
-    this.isShowingDialog = true
-    this.$broadcast('modifyItem', {
-      item: this.listData[idx]
-    })
-  },
-
-  // 计算天数
-  calcDate(aDate) {
+  /** 
+   * @method calcDate
+   * @param {string} aDate 时间
+   * @param {string} aTime 日期
+   * @return {number} -1是过期 0是今日 1是明日 2是以后
+   */
+  calcDate(aDate, aTime) {
     var date = new Date()
+    // 这两个来判断今日结束事件是否过期的
+    var endTime = aDate.replace(/[\u4e00-\u9fa5]/g, '.') + ' ' + aTime
+    endTime = new Date(endTime).getTime()
+    var nowTime = date.getTime()
+
     // 去掉小时分钟
     date = new Date(date.getFullYear() + '/' + (Number(date.getMonth()) + 1) + '/' + date.getDate()).getTime()
-    // const tD = date.getDate()
-    // const tM = date.getMonth() + 1
-    // date.setDate(date.getDate() + 1) // 往后一天
-    // const tmwM = date.getMonth() + 1
-    // const tmwD = date.getDate()
-    // try {
-    //   const aM = Number(aDate.match(/年(.+?)月/)[1])
-    //   const aD = Number(aDate.match(/月(.+?)日/)[1])
-
-    //   if (aM < tM || aM === tM && aD < tD) {
-    //     return -1
-    //   } else if (aM === tM && aD === tD) {
-    //     return 0
-    //   } else if (aM === tmwM && aD === tmwD) {
-    //     return 1
-    //   } else {
-    //     return 2
-    //   }
-    // } catch {
-    //   this.showHint('日期计算 error')
-    // }
     aDate = new Date(aDate.replace(/[\u4e00-\u9fa5]/g, '.')).getTime()
-    if (aDate < date) {
+
+    if (aDate < date || nowTime > endTime) {
       return -1
     } else if (aDate === date) {
       return 0
@@ -367,14 +309,48 @@ export default {
     }
   },
 
-  // 整理列表
-  sortList() {
-    this.listData.sort(function (a, b) {
-      if (a.completed === false && b.completed === true) {
-        return -1
-      } else {
-        return 1
+
+  // 存储相关
+  saveData() {
+    this.setStorage('data', this.listData)
+  },
+  loadData() {
+    let that = this
+    this.getStorage('data').then((value) => {
+      that.listData = value
+      this.showHint('数据读取成功')
+    })
+  },
+  setStorage(key, value) {
+    let that = this
+    // 设置storage
+    storage.set({
+      key,
+      value: JSON.stringify(value),
+      success() {
+        that.showHint('数据存储成功')
+      },
+      fail(data, code) {
+        that.showHint(`setStorage fail, code = ${code}`)
       }
+    })
+  },
+  getStorage(key) {
+    let that = this
+    return new Promise((resolve, reject) => {
+      // 获取storage
+      storage.get({
+        key,
+        success(data) {
+          if (data) {
+            resolve(JSON.parse(data))
+          }
+        },
+        fail(data, code) {
+          that.showHint(`getStorage fail, code = ${code}`)
+          reject({ data, code })
+        }
+      })
     })
   }
 

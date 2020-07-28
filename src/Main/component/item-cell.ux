@@ -1,43 +1,25 @@
 <template>
   <div class="todo" onclick="sendItem(idx)">
+    <!-- 第一行 包括状态 文字 删除按钮 -->
     <div class="line1">
       <div class="btn-check {{item.completed ? 'btn-checked' : ''}}" onclick="modifyItemStatus(idx)"></div>
       <text class="text {{item.completed ? 'line-through' : ''}}">{{item.event}}</text>
       <image class="btn" src="/Common/close.png" onclick="showHint('长按以删除')" onlongpress="deleteItem(idx)"></image>
-      <!-- <input type="button" class="btn" onclick="showHint('长按以删除')" onlongpress="deleteItem(idx)"></input> -->
     </div>
-    <!-- <div class="line2"> -->
-    <!-- <text class="{{item.completed ? 'line-through' : ''}}">{{'起始: ' + item.start.date + ' ' + item.start.time}}</text> -->
-    <!-- <text class="{{item.completed ? 'line-through' : ''}}">{{'结束: ' +item.end.date + ' ' + item.end.time}}</text> -->
-    <progress type="horizontal" class="progress" style="color: {{dyColor}}; stroke-width: 10px;" percent="{{dyPercent}}"></progress>
-    <!-- </div> -->
+    <!-- 第二行 进度条 -->
+    <progress type="horizontal" class="progress" style="color: {{dyColor}}; stroke-width: 12px;" percent="{{dyPercent}}"></progress>
 
   </div>
 </template>
 
 <style lang="less">
-/* 两种形式check */
-.btn-check {
-  flex-shrink: 0;
-  width: 50px;
-  height: 50px;
-  margin: 25px;
-  border-radius: 25px;
-  border-width: 2px;
-  border-color: #80609e;
-}
-
-.btn-checked {
-  flex-shrink: 0;
-  border-width: 0px;
-  background-image: url("/Common/checked.png");
-}
-
+/* 删除线 */
 .line-through {
   text-decoration: line-through;
   color: #cdcdcd;
 }
 
+/* 内容主体 */
 .todo {
   flex-direction: column;
   flex-grow: 1;
@@ -45,10 +27,28 @@
   background-color: #ffffff;
   border-radius: 20px;
   margin: 10px 0;
-
+  /* 第一行 */
   .line1 {
     align-items: center;
     height: 100px;
+
+    /* 两种形式check */
+    .btn-check {
+      flex-shrink: 0;
+      width: 50px;
+      height: 50px;
+      margin: 25px;
+      border-radius: 25px;
+      border-width: 2px;
+      border-color: #80609e;
+    }
+
+    .btn-checked {
+      flex-shrink: 0;
+      margin: 25px;
+      border-width: 0px;
+      background-image: url("/Common/checked.png");
+    }
 
     .text {
       flex-grow: 1;
@@ -58,6 +58,7 @@
     .btn {
       width: 60px;
       height: 60px;
+      flex-shrink: 0;
       /* border-radius: 30px; */
       margin-right: 10px;
     }
@@ -66,15 +67,10 @@
       opacity: 0.5;
     }
   }
-  /* .line2 { */
-  /* justify-content: center; */
+  /* 进度条 */
   .progress {
-    width: 1000px;
-    /* align-self: stretch;
-      flex-basis: 1000px; */
-    margin: 10px 50px;
+    padding: 10px 50px;
   }
-  /* } */
 }
 </style>
 
@@ -119,19 +115,29 @@ export default {
     this.$dispatch('deleteEvent', { idx: idx })
   },
 
-  /* 发送该行idx */
+  /* 发送该行idx 用于修改数据 */
   sendItem(idx) {
     this.$dispatch('modifyEvent', { idx: idx })
   },
 
-  // 计算天数
+  /**
+   * @method calcStatus
+   * @param {object} item
+   * @return {object} 一个对象中包含status和percent
+   * status 0 - 进行中
+   *        1 - 未开始
+   *        -1 - 超时
+   *        2 - 已完成
+   * 
+   * percent 代表进度 超时和已完成为100 未开始是 0 进行中会自动计算
+   */
   calcStatus(item) {
     var time = new Date().getTime()
     var startTime = item.start.date.replace(/[\u4e00-\u9fa5]/g, '.') + ' ' + item.start.time
     startTime = new Date(startTime).getTime()
     var endTime = item.end.date.replace(/[\u4e00-\u9fa5]/g, '.') + ' ' + item.end.time
     endTime = new Date(endTime).getTime()
-    
+
     if (item.completed) {
       return {
         status: 2,
@@ -153,7 +159,7 @@ export default {
         percent: ((time - startTime) / (endTime - startTime)) * 100
       }
     }
-    
+
   },
 
 }
