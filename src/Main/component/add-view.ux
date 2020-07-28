@@ -74,7 +74,7 @@
   /* 时间栏 */
   .time-line {
     justify-content: space-around;
-
+    /* 时间块 */
     .time-item {
       justify-content: space-between;
       border-color: #cc6600;
@@ -83,15 +83,16 @@
 
       padding: 10px 15px;
       flex-direction: column;
-
+      /* 标题 */
       > text {
         color: #cc6600;
         width: 130px;
         margin-left: 10px;
       }
-
+      /* 选择器块 */
       .picker-item {
         justify-content: space-around;
+
         > image {
           padding: 2px 0;
           margin-right: 3px;
@@ -108,7 +109,7 @@
   .button-line {
     flex-direction: row;
     padding: 10px 10px;
-
+    /* 左边的麦克风和时间按钮 */
     .image-btn {
       flex-shrink: 0;
       margin: 10px 15px;
@@ -117,7 +118,7 @@
     .image-btn:active {
       opacity: 0.5;
     }
-
+    /* 添加按钮 */
     .text-add-btn {
       flex-shrink: 0;
       width: 120px;

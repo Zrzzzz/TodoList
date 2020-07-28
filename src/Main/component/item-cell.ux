@@ -50,12 +50,12 @@
       border-width: 0px;
       background-image: url("/Common/pictures/checked.png");
     }
-
+    /* 文字部分 */
     .text {
       flex-grow: 1;
       font-size: 40px;
     }
-
+    /* 删除按钮 */
     .btn {
       width: 60px;
       height: 60px;
