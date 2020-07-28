@@ -4,7 +4,7 @@
     <div class="line1">
       <div class="btn-check {{item.completed ? 'btn-checked' : ''}}" onclick="modifyItemStatus(idx)"></div>
       <text class="text {{item.completed ? 'line-through' : ''}}">{{item.event}}</text>
-      <image class="btn" src="/Common/close.png" onclick="showHint('长按以删除')" onlongpress="deleteItem(idx)"></image>
+      <image class="btn" src="/Common/pictures/close.png" onclick="showHint('长按以删除')" onlongpress="deleteItem(idx)"></image>
     </div>
     <!-- 第二行 进度条 -->
     <progress type="horizontal" class="progress" style="color: {{dyColor}}; stroke-width: 12px;" percent="{{dyPercent}}"></progress>
@@ -24,6 +24,7 @@
   flex-direction: column;
   flex-grow: 1;
 
+  border: 3px solid #f1efef;
   background-color: #ffffff;
   border-radius: 20px;
   margin: 10px 0;
@@ -40,14 +41,14 @@
       margin: 25px;
       border-radius: 25px;
       border-width: 2px;
-      border-color: #80609e;
+      border-color: #5e5e5e;
     }
 
     .btn-checked {
       flex-shrink: 0;
       margin: 25px;
       border-width: 0px;
-      background-image: url("/Common/checked.png");
+      background-image: url("/Common/pictures/checked.png");
     }
 
     .text {

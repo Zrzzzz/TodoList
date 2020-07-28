@@ -1,0 +1,82 @@
+<template>
+  <div class="stat-cell-main" style="border-color:{{pend === true ? '#FF6666' : '#FFCC99'}};">
+    <text class="title">{{title}}</text>
+    <div>
+      <div class="progress-line">
+        <progress class="progress" type="horizontal" style="color:{{dyColor}}; stroke-width:20px;" percent="{{percent}}"></progress>
+      </div>
+      <text class="text" style="color:{{dyColor}}">{{percent + '%'}}</text>
+    </div>
+  </div>
+</template>
+
+<style lang="less">
+.stat-cell-main {
+  width: 650px;
+  flex-direction: column;
+  background-color: #ffffff;
+  border-width: 3px;
+  border-radius: 25px;
+  padding: 10px 30px;
+  margin: 30px 0;
+  /* 标题 */
+  .title {
+    color: #000000;
+    font-size: 30px;
+    font-weight: bold;
+  }
+  /* 进度条和文字 */
+  > div {
+    align-items: center;
+    .progress-line {
+      flex: 1;
+      flex-direction: column;
+    }
+
+    .text {
+      width: 100px;
+      padding-left: 10px;
+    }
+  }
+}
+</style>
+
+<script>
+import prompt from '@system.prompt'
+export default {
+  props: ['type', 'percent', 'pend'],
+  data: {
+  },
+
+  computed: {
+    title: {
+      get() {
+        if (this.type === 0) {
+          return '已过期'
+        } else if (this.type === 1) {
+          return '进行中'
+        }
+        // this.type 为 2 时
+        else {
+          return '已完成'
+        }
+      }
+    },
+    dyColor: {
+      get() {
+        if (this.type === 0) {
+          return '#FF0033'
+        } else if (this.type === 1) {
+          return '#FF9900'
+        }
+        // this.type 为 2 时
+        else {
+          return '#99CC33'
+        }
+      }
+    },
+
+  }
+}
+
+</script>

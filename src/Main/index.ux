@@ -1,129 +1,238 @@
 <import name="page-main-item" src="./component/item-cell.ux"></import>
 <import name="page-add" src="./component/add-view.ux"></import>
+<import name="stat-item" src="./component/stat-cell.ux"></import>
+ 
  
 
 <template>
   <div class="page">
 
-    <!-- 事项List -->
-    <div class="page-main">
-      <!-- list组件 -->
-      <list class="item-list">
-        <!-- 头部 -->
-        <list-item type="header" class="page-header">
-          <text>XiTodos</text>
-        </list-item>
-        <!-- 事件列表 -->
-        <block>
-          <list-item type="text" if="{{beforeShow}}">
-            <text class="sectionHeader">已过期</text>
-          </list-item>
-          <block for="{{listData}}" if="{{beforeShow}}">
-            <list-item class="show-item" if="{{(calcDate($item.end.date, $item.end.time) === -1) && !$item.completed}}" type="item">
-              <page-main-item item="{{$item}}" idx="{{$idx}}"></page-main-item>
-            </list-item>
-          </block>
+    <!-- tabs组件 -->
+    <tabs onchange="changeTabIndex">
+      <!-- tab-bar组件 -->
+      <tab-bar class="tab-bar">
+        <text class="tab {{currentIndex === 0 ? 'active' : ''}}">列表</text>
+        <text class="tab {{currentIndex === 1 ? 'active' : ''}}">统计</text>
+      </tab-bar>
+      <tab-content class="tab-content">
+        <div class="list-main">
+          <!-- 事项List -->
+          <div class="page-main">
+            <!-- list组件 -->
+            <list class="item-list">
+              <!-- 头部 -->
+              <list-item type="header" class="page-header">
+                <text>XiTodos</text>
+              </list-item>
+              <!-- 事件列表 -->
+              <block>
+                <list-item type="text" if="{{beforeShow}}">
+                  <text class="sectionHeader">已过期</text>
+                </list-item>
+                <block for="{{listData}}" if="{{beforeShow}}">
+                  <list-item class="show-item" if="{{(calcDate($item.end.date, $item.end.time) === -1) && !$item.completed}}" type="item">
+                    <page-main-item item="{{$item}}" idx="{{$idx}}"></page-main-item>
+                  </list-item>
+                </block>
 
-          <list-item type="text" if="{{todayShow}}">
-            <text class="sectionHeader">今日</text>
-          </list-item>
-          <block for="{{listData}}" if="{{todayShow}}">
-            <list-item class="show-item" if="{{(calcDate($item.end.date, $item.end.time) === 0) && !$item.completed}}" type="item">
-              <page-main-item item="{{$item}}" idx="{{$idx}}"></page-main-item>
-            </list-item>
-          </block>
+                <list-item type="text" if="{{todayShow}}">
+                  <text class="sectionHeader">今日</text>
+                </list-item>
+                <block for="{{listData}}" if="{{todayShow}}">
+                  <list-item class="show-item" if="{{(calcDate($item.end.date, $item.end.time) === 0) && !$item.completed}}" type="item">
+                    <page-main-item item="{{$item}}" idx="{{$idx}}"></page-main-item>
+                  </list-item>
+                </block>
 
-          <list-item type="text" if="{{tmwShow}}">
-            <text class="sectionHeader">明日</text>
-          </list-item>
-          <block for="{{listData}}" if="{{tmwShow}}">
-            <list-item class="show-item" if="{{(calcDate($item.end.date, $item.end.time) === 1) && !$item.completed}}" type="item">
-              <page-main-item item="{{$item}}" idx="{{$idx}}"></page-main-item>
-            </list-item>
-          </block>
+                <list-item type="text" if="{{tmwShow}}">
+                  <text class="sectionHeader">明日</text>
+                </list-item>
+                <block for="{{listData}}" if="{{tmwShow}}">
+                  <list-item class="show-item" if="{{(calcDate($item.end.date, $item.end.time) === 1) && !$item.completed}}" type="item">
+                    <page-main-item item="{{$item}}" idx="{{$idx}}"></page-main-item>
+                  </list-item>
+                </block>
 
-          <list-item type="text" if="{{afterShow}}">
-            <text class="sectionHeader">以后</text>
-          </list-item>
-          <block for="{{listData}}" if="{{afterShow}}">
-            <list-item class="show-item" if="{{(calcDate($item.end.date, $item.end.time) === 2) && !$item.completed}}" type="item">
-              <page-main-item item="{{$item}}" idx="{{$idx}}"></page-main-item>
-            </list-item>
-          </block>
+                <list-item type="text" if="{{afterShow}}">
+                  <text class="sectionHeader">以后</text>
+                </list-item>
+                <block for="{{listData}}" if="{{afterShow}}">
+                  <list-item class="show-item" if="{{(calcDate($item.end.date, $item.end.time) === 2) && !$item.completed}}" type="item">
+                    <page-main-item item="{{$item}}" idx="{{$idx}}"></page-main-item>
+                  </list-item>
+                </block>
 
-          <list-item type="text" if="{{doneShow}}">
-            <text class="sectionHeader">已完成</text>
-          </list-item>
-          <block for="{{listData}}" if="{{doneShow}}">
-            <list-item class="show-item" if="{{$item.completed}}" type="item">
-              <page-main-item item="{{$item}}" idx="{{$idx}}"></page-main-item>
-            </list-item>
-          </block>
-        </block>
-      </list>
+                <list-item type="text" if="{{doneShow}}">
+                  <text class="sectionHeader">已完成</text>
+                </list-item>
+                <block for="{{listData}}" if="{{doneShow}}">
+                  <list-item class="show-item" if="{{$item.completed}}" type="item">
+                    <page-main-item item="{{$item}}" idx="{{$idx}}"></page-main-item>
+                  </list-item>
+                </block>
+              </block>
+            </list>
 
-    </div>
-    <!-- 新建btn -->
-    <div class="new-btn" onclick="showDialog" show="{{!isShowingDialog}}">
-      <image src="/Common/plus.png"></image>
-    </div>
+          </div>
+          <!-- 新建btn -->
+          <div class="new-btn" onclick="showDialog" show="{{isShowingAddBtn}}">
+            <image src="/Common/pictures/plus.png"></image>
+          </div>
 
-    <!-- 添加栏 -->
-    <page-add></page-add>
-
+          <!-- 添加栏 -->
+          <page-add></page-add>
+        </div>
+        <div class="statistic-main">
+          <swiper class="swiper" id="swiper" indicator="false">
+            <text>已过期</text>
+            <text>进行中</text>
+            <text>已完成</text>
+          </swiper>
+          <div class="line"></div>
+          <div class="chart-line">
+            <image class="left-arrow" src="/Common/pictures/arrow.png" onclick="turnChart('left')"></image>
+            <canvas class="pie-chart" id="pie-chart" style="transform:rotate({{pieChartRotateDeg}}deg);{{aniStr}}"></canvas>
+            <image class="right-arrow" src="/Common/pictures/arrow.png" onclick="turnChart('right')"></image>
+          </div>
+          <div class="stat-list">
+            <block for={{typeArr}}>
+              <stat-item type="{{$item}}" percent="{{this.percentArr[$idx].toFixed(1)}}" pend="{{type === $idx}}"></stat-item>
+            </block>
+          </div>
+        </div>
+      </tab-content>
+    </tabs>
   </div>
 </template>
 
 <style lang="less">
-/* 页面采用竖向主轴 */
 .page {
-  flex-direction: column;
-  background-color: #f2f2f2;
-
-  .page-main {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-
-    .page-header {
-      flex-direction: column;
-      flex-shrink: 0;
-
-      > text {
-        line-height: 200px;
-        font-size: 100px;
-        color: #ead7d7;
-        text-align: center;
-      }
-    }
-
-    .item-list {
-      flex: 1;
-      margin: 0 50px;
-
-      .sectionHeader {
-        color: #000000;
-        font-size: 40px;
-        line-height: 100px;
-        font-weight: bold;
-      }
-    }
-
-    .show-item {
-      animation-name: showItem;
-      animation-duration: 300ms;
-    }
+  /* tabbar部分 */
+  .tab-bar {
+    position: fixed;
+    bottom: -30px;
+    background-color: #ef986c;
+    border-radius: 30px;
+    padding-bottom: 30px;
+  }
+  .tab-bar .tab {
+    height: 90px;
+    font-size: 35px;
+    color: #f2f2f2;
   }
 
-  /* 添加按钮 */
-  .new-btn {
-    position: fixed;
-    right: 50px;
-    bottom: 120px;
+  .tab-bar .active {
+    color: #5e5e5e;
+  }
+  .tab-content {
+    /* 主页面 */
+    .list-main {
+      flex-direction: column;
+      background-color: #f2f2f2;
 
-    > image {
-      width: 100px;
-      height: 100px;
+      /* List */
+      .page-main {
+        display: flex;
+        flex-direction: column;
+        height: 1360px;
+
+        /* 顶部Logo */
+        .page-header {
+          flex-direction: column;
+          flex-shrink: 0;
+
+          > text {
+            line-height: 200px;
+            font-size: 100px;
+            color: #ef986c;
+            text-align: center;
+          }
+        }
+        /* 逻辑块 */
+        .item-list {
+          flex: 1;
+          margin: 0 50px;
+          /* 状态Title */
+          .sectionHeader {
+            color: #000000;
+            font-size: 40px;
+            line-height: 100px;
+            font-weight: bold;
+          }
+        }
+        /* 动画效果 */
+        .show-item {
+          animation-name: showItem;
+          animation-duration: 300ms;
+        }
+      }
+
+      /* 添加按钮 */
+      .new-btn {
+        position: fixed;
+        right: 50px;
+        bottom: 200px;
+
+        > image {
+          width: 100px;
+          height: 100px;
+        }
+      }
+    }
+
+    /* 统计页面 */
+    .statistic-main {
+      flex-direction: column;
+      align-items: center;
+      background-color: #f2f2f2;
+      /* 顶部指示文字 */
+      .swiper {
+        height: 40px;
+        width: 200px;
+
+        > text {
+          text-align: center;
+          font-size: 35px;
+        }
+      }
+      /* 指示线 */
+      .line {
+        height: 50px;
+        width: 2px;
+        background-color: #666666;
+        margin-top: 10px;
+      }
+      /* 图标横栏 */
+      .chart-line {
+        flex-direction: row;
+        justify-content: space-around;
+        align-items: center;
+        /* 两个左右按钮 */
+        > image {
+          width: 100px;
+        }
+        > image:active {
+          opacity: 0.5;
+        }
+
+        .right-arrow {
+          transform: rotate(180deg);
+        }
+        /* 饼状图 */
+        .pie-chart {
+          width: 400px;
+          height: 400px;
+          margin-top: 10px;
+        }
+      }
+      /* 状态列表 */
+      .stat-list {
+        flex-direction: column;
+        margin-top: 50px;
+        > stat-item {
+          width: 500px;
+        }
+      }
     }
   }
 }
@@ -147,17 +256,49 @@ export default {
   private: {
     // 数据列表
     listData: [],
-
-    // 是否在新建
-    isShowingDialog: false,
+    // 目前TabIndex
+    currentIndex: 0,
+    // 是否显示添加按钮
+    isShowingAddBtn: true,
+    /** 当前显示类型
+     * 0为过期
+     * 1为进行中
+     * 2为已完成
+     */
+    type: 0,
+    pieChartRotateDeg: 0,
+    typeArr: [0, 1, 2],
   },
   computed: {
+    /* 计算各种状态的百分比 */
+    percentArr: {
+      get() {
+        var overed = 0, done = 0, doing = 0
+        for (var i in this.listData) {
+          let res = this.calcDate(this.listData[i].end.date, this.listData[i].end.time)
+          if (res === -1 && !this.listData[i].completed) {
+            overed++
+          } else if (this.listData[i].completed) {
+            done++
+          } else {
+            doing++
+          }
+        }
+
+        var sum = overed + done + doing
+        var arr = []
+        arr.push(overed / sum * 100)
+        arr.push(doing / sum * 100)
+        arr.push(done / sum * 100)
+        return arr
+      }
+    },
     /* 存储几种模块的显示Bool */
     beforeShow: {
       get() {
         var pend = false
         for (var i in this.listData) {
-          if (this.calcDate(this.listData[i].end.date) === -1 && !this.listData[i].completed) {
+          if (this.calcDate(this.listData[i].end.date, this.listData[i].end.time) === -1 && !this.listData[i].completed) {
             pend = true
             break
           }
@@ -169,7 +310,7 @@ export default {
       get() {
         var pend = false
         for (var i in this.listData) {
-          if (this.calcDate(this.listData[i].end.date) === 0 && !this.listData[i].completed) {
+          if (this.calcDate(this.listData[i].end.date, this.listData[i].end.time) === 0 && !this.listData[i].completed) {
             pend = true
             break
           }
@@ -181,7 +322,7 @@ export default {
       get() {
         var pend = false
         for (var i in this.listData) {
-          if (this.calcDate(this.listData[i].end.date) === 1 && !this.listData[i].completed) {
+          if (this.calcDate(this.listData[i].end.date, this.listData[i].end.time) === 1 && !this.listData[i].completed) {
             pend = true
             break
           }
@@ -193,7 +334,7 @@ export default {
       get() {
         var pend = false
         for (var i in this.listData) {
-          if (this.calcDate(this.listData[i].end.date) === 2 && !this.listData[i].completed) {
+          if (this.calcDate(this.listData[i].end.date, this.listData[i].end.time) === 2 && !this.listData[i].completed) {
             pend = true
             break
           }
@@ -214,6 +355,16 @@ export default {
       }
     }
   },
+
+  /* 提示信息 */
+  showHint(msg) {
+    prompt.showToast({ message: msg })
+  },
+
+
+  /* ************************************************************************************************************** */
+  /* 事件列表页面 */
+  /* ************************************************************************************************************** */
   /* 监听函数 和 数据读取 */
   onInit() {
     // 启动时读取数据
@@ -250,9 +401,11 @@ export default {
     })
     /* 修改事件 */
     this.$on('modifyEvent', (evt) => {
-      this.isShowingDialog = true
+      var tmpItem = this.listData[evt.detail.idx]
+      this.isShowingAddBtn = false
       this.$broadcast('modifyItem', {
-        item: Object.create(this.listData[evt.detail.idx]),
+        // 进行深拷贝
+        item: JSON.parse(JSON.stringify(tmpItem)),
         idx: evt.detail.idx
       })
     })
@@ -264,20 +417,14 @@ export default {
 
     /* 隐藏添加栏时 */
     this.$on('hideDialog', (evt) => {
-      this.isShowingDialog = false
+      this.isShowingAddBtn = true
       this.saveData()
     })
 
   },
-
-  /* 提示信息 */
-  showHint(msg) {
-    prompt.showToast({ message: msg })
-  },
-
   /* 显示对话框 */
   showDialog() {
-    this.isShowingDialog = true
+    this.isShowingAddBtn = false
     this.$broadcast('showDialog')
   },
 
@@ -309,8 +456,67 @@ export default {
     }
   },
 
+  /* ************************************************************************************************************** */
+  /* 统计页面 */
+  /* ************************************************************************************************************** */
+  /* 绘制饼状图 */
+  drawCircle() {
+    var color = ['#FF0033', '#FF9900', '#99CC33']
+    var percent = this.percentArr
+    const canvas = this.$element('pie-chart')
+    const ctx = canvas.getContext('2d')
+    var startPoint = 1.5 * Math.PI
+    for (var i = 0; i < percent.length; i++) {
+      ctx.fillStyle = color[i]
+      ctx.strokeStyle = color[i]
+      ctx.beginPath()
+      ctx.moveTo(200, 200)
+      ctx.arc(200, 200, 200, startPoint, startPoint + Math.PI * 2 * (percent[i] / 100), false)
+      ctx.fill()
+      ctx.stroke()
+      startPoint += Math.PI * 2 * (percent[i] / 100)
+    }
+  },
 
-  // 存储相关
+  /* 左右箭头切换 */
+  turnChart(direct) {
+    const preType = this.type - 1 < 0 ? this.type + 2 : this.type - 1
+    const nextType = this.type + 1 > 2 ? this.type - 2 : this.type + 1
+
+    if (direct === 'left') {
+      this.pieChartRotateDeg = this.pieChartRotateDeg + (this.percentArr[this.type] + this.percentArr[preType]) * 360 / 2 / 100
+      this.type = preType
+    } else {
+      this.pieChartRotateDeg = this.pieChartRotateDeg - (this.percentArr[this.type] + this.percentArr[nextType]) * 360 / 2 / 100
+      this.type = nextType
+    }
+
+    this.$element('swiper').swipeTo({ index: this.type })
+
+
+  },
+
+  /* 修改TabIndex */
+  changeTabIndex(evt) {
+    this.currentIndex = evt.index
+    if (this.currentIndex === 1) {
+      this.drawCircle()
+      this.isShowingAddBtn = false
+      // 转到中间部分
+      var tmpDeg = -this.percentArr[0] * 360 / 2 / 100
+      this.pieChartRotateDeg = tmpDeg
+      this.type = 0
+      this.$element('swiper').swipeTo({ index: 0 })
+    } else {
+      this.isShowingAddBtn = true
+    }
+  },
+
+
+  /* ************************************************************************************************************** */
+  /* 存储函数 */
+  /* ************************************************************************************************************** */
+  /* 存储相关 */
   saveData() {
     this.setStorage('data', this.listData)
   },
@@ -352,7 +558,8 @@ export default {
         }
       })
     })
-  }
+  },
+
 
 }
 </script>
