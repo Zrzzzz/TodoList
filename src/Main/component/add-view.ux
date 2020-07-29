@@ -439,7 +439,7 @@ export default {
     that.tmpItem.event = ''
     asr.start({
       success: function () {
-        // that.showHint('开始识别')
+        that.showHint('开始识别')
       },
       fail: function (data, code) {
         that.showHint(`start fail, code=${code}, data=${data}`)
@@ -474,7 +474,7 @@ export default {
     this.tmpItem.start.time = H + ':' + m
     date.setHours(date.getHours() + 1)
 
-    var Y = date.getFullYear()
+    Y = date.getFullYear()
     M = date.getMonth() + 1
     D = date.getDate()
     H = date.getHours()

@@ -1,11 +1,13 @@
 <template>
   <div class="stat-cell-main" style="border-color:{{pend === true ? '#FF6666' : '#FFCC99'}};">
+    <!-- 标题 -->
     <text class="title">{{title}}</text>
     <div>
+      <!-- 滚动条 和 个数 -->
       <div class="progress-line">
         <progress class="progress" type="horizontal" style="color:{{dyColor}}; stroke-width:20px;" percent="{{percent}}"></progress>
       </div>
-      <text class="text" style="color:{{dyColor}}">{{percent + '%'}}</text>
+      <text class="text" style="color:{{dyColor}}">{{percent + '% ' + count + '个'}}</text>
     </div>
   </div>
 </template>
@@ -34,7 +36,6 @@
     }
 
     .text {
-      width: 100px;
       padding-left: 10px;
     }
   }
@@ -44,7 +45,7 @@
 <script>
 import prompt from '@system.prompt'
 export default {
-  props: ['type', 'percent', 'pend'],
+  props: ['type', 'percent', 'pend', 'count'],
   data: {
   },
 
@@ -65,13 +66,13 @@ export default {
     dyColor: {
       get() {
         if (this.type === 0) {
-          return '#FF0033'
+          return '#CC0033'
         } else if (this.type === 1) {
           return '#FF9900'
         }
         // this.type 为 2 时
         else {
-          return '#99CC33'
+          return '#4dc2af'
         }
       }
     },

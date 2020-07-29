@@ -83,20 +83,24 @@
           <page-add></page-add>
         </div>
         <div class="statistic-main">
+          <!-- 顶部指示文本 -->
           <swiper class="swiper" id="swiper" indicator="false">
             <text>已过期</text>
             <text>进行中</text>
             <text>已完成</text>
           </swiper>
+          <!-- 指示线 -->
           <div class="line"></div>
+          <!-- 饼状图和按钮 -->
           <div class="chart-line">
             <image class="left-arrow" src="/Common/pictures/arrow.png" onclick="turnChart('left')"></image>
-            <canvas class="pie-chart" id="pie-chart" style="transform:rotate({{pieChartRotateDeg}}deg);{{aniStr}}"></canvas>
+            <canvas class="pie-chart" id="pie-chart" style="transform:rotate({{pieChartRotateDeg}}deg);"></canvas>
             <image class="right-arrow" src="/Common/pictures/arrow.png" onclick="turnChart('right')"></image>
           </div>
+          
           <div class="stat-list">
             <block for={{typeArr}}>
-              <stat-item type="{{$item}}" percent="{{this.percentArr[$idx].toFixed(1)}}" pend="{{type === $idx}}"></stat-item>
+              <stat-item type="{{$item}}" percent="{{percentArr[$idx]}}" pend="{{type === $idx}}" count="{{countArr[$idx]}}"></stat-item>
             </block>
           </div>
         </div>
@@ -273,6 +277,16 @@ export default {
     /* 计算各种状态的百分比 */
     percentArr: {
       get() {
+        const countArr = this.countArr
+        var arr = []
+        for (var i in countArr) {
+          arr.push(Number((countArr[i] / this.listData.length * 100).toFixed(1)))
+        }
+        return arr
+      }
+    },
+    countArr: {
+      get() {
         var overed = 0, done = 0, doing = 0
         for (var i in this.listData) {
           let res = this.calcDate(this.listData[i].end.date, this.listData[i].end.time)
@@ -285,11 +299,10 @@ export default {
           }
         }
 
-        var sum = overed + done + doing
         var arr = []
-        arr.push(overed / sum * 100)
-        arr.push(doing / sum * 100)
-        arr.push(done / sum * 100)
+        arr.push(overed)
+        arr.push(doing)
+        arr.push(done)
         return arr
       }
     },
@@ -461,7 +474,7 @@ export default {
   /* ************************************************************************************************************** */
   /* 绘制饼状图 */
   drawCircle() {
-    var color = ['#FF0033', '#FF9900', '#99CC33']
+    var color = ['#CC0033', '#FF9900', '#4dc2af']
     var percent = this.percentArr
     const canvas = this.$element('pie-chart')
     const ctx = canvas.getContext('2d')
