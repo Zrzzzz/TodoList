@@ -277,6 +277,7 @@ export default {
     this.$on('showDialog', (evt) => {
       this.type = 0
       this.isShowing = true
+      this.isShowingTimeline = false
       this.showDialog()
     })
     this.$on('modifyItem', (evt) => {
@@ -378,7 +379,7 @@ export default {
     asr.init({
       // 初始化成功后的回调函数
       success: function () {
-        that.showHint('语音模块初始化成功')
+        // that.showHint('语音模块初始化成功')
       },
       // 初始化失败后的回调函数
       fail: function (data, code) {
@@ -420,7 +421,7 @@ export default {
     let that = this
     asr.close({
       success: function () {
-        that.showHint('语音模块已关闭')
+        // that.showHint('语音模块已关闭')
       },
       fail: function (data, code) {
         that.showHint(`close fail, code=${code}, data=${data}`)
@@ -438,7 +439,7 @@ export default {
     that.tmpItem.event = ''
     asr.start({
       success: function () {
-        that.showHint('开始识别')
+        // that.showHint('开始识别')
       },
       fail: function (data, code) {
         that.showHint(`start fail, code=${code}, data=${data}`)
@@ -450,7 +451,7 @@ export default {
     // 停止当前语音识别
     asr.stop({
       success: function () {
-        that.showHint('停止识别')
+        // that.showHint('停止识别')
       },
       fail: function (data, code) {
         that.showHint(`start fail, code=${code}, data=${data}`)

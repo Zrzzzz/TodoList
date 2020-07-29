@@ -524,7 +524,7 @@ export default {
     let that = this
     this.getStorage('data').then((value) => {
       that.listData = value
-      this.showHint('数据读取成功')
+      // this.showHint('数据读取成功')
     })
   },
   setStorage(key, value) {
@@ -534,7 +534,7 @@ export default {
       key,
       value: JSON.stringify(value),
       success() {
-        that.showHint('数据存储成功')
+        // that.showHint('数据存储成功')
       },
       fail(data, code) {
         that.showHint(`setStorage fail, code = ${code}`)
